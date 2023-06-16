@@ -1,23 +1,46 @@
 from bs4 import BeautifulSoup
-import lxml
-from chardet import detect
+import requests
 
 
-def get_encoding_type():
-    with open("website.html", 'rb') as f:
-        rawdata = f.read()
-    return detect(rawdata)['encoding']
+# with open('website.html', encoding="utf-8") as file:
+#     content = file.read()
 
+# soup = BeautifulSoup(content, 'html.parser')
+# all_p_tags = (soup.find_all(name="a"))
+#
+# for tag in all_p_tags:
+#     print(tag.get("href"))
+#
+# headings = soup.find(name="h1", id="name")
+#
+# print(headings)
 
-with open('website.html', encoding="utf-8") as file:
-    content = file.read()
+response = requests.get("https://news.ycombinator.com/")
 
-soup = BeautifulSoup(content, 'html.parser')
-all_p_tags = (soup.find_all(name="a"))
+web_page = response.text
 
-for tag in all_p_tags:
-    print(tag.get("href"))
+soup = BeautifulSoup(web_page, "html.parser")
 
-headings = soup.find(name="h1", id="name")
+article_tags = soup.find_all(name="span", class_="titleline")
+article_scores = soup.find_all(name="span", class_="score")
 
-print(headings)
+article_list = []
+score_list = []
+
+for heading_links, highest_score in zip(article_tags, article_scores):
+    a = heading_links.find(name="a").get("href")
+    text = heading_links.find(name="a").getText()
+    numbers = int(highest_score.getText().split()[0])
+    score_list.append(numbers)
+    article_list.append((numbers, text, a))
+
+print(article_list)
+
+max_score = max(score_list)
+max_article_index = score_list.index(max_score)
+max_article = article_list[max_article_index]
+
+print("Article with the highest score!:")
+print(f"Title: {max_article[1]}")
+print(f"URL: {max_article[2]}")
+print(f"Score: {max_article[0]}")
