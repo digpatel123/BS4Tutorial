@@ -40,7 +40,7 @@ max_score = max(score_list)
 max_article_index = score_list.index(max_score)
 max_article = article_list[max_article_index]
 
-print("Article with the highest score!:")
+print("Article with the highest score:")
 print(f"Title: {max_article[1]}")
 print(f"URL: {max_article[2]}")
 print(f"Score: {max_article[0]}")
